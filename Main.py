@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+text=""
+
 
 # def create_blank_pic():
 #     height,width=10,10
@@ -8,8 +10,9 @@ import numpy as np
 #     arr[:,:,:]=[100,120,140]
 #     cv2.imwrite('original.png',arr,params=None)
 
+
 def LSB_encode():
-    img=cv2.imread('original.png')
+    img=cv2.imread('pic/original.png')
     text_binary=""
     text_binary_ptr=0
     for i in text:
@@ -35,19 +38,23 @@ def LSB_decode():
     img=cv2.imread('LSB/LSB_encode.png')
     text_binary=""
     text=""
+    flag=0
     for i in range(len(img)):
         for j in range(len(img[0])):
             text_binary+=f'{img[i][j][2]:08b}'[1:][-1]
-
-    for i in range(0,len(text_binary),8):
-        if(int(text_binary[i:i+8],2)!=0):
-            text+=chr(int(text_binary[i:i+8],2))
-        else:
+            if(len(text_binary)%8==0):
+                if(int(int(text_binary[-8:],2)==0)):
+                    flag=1
+                    break
+                else:
+                    text+=chr(int(text_binary[-8:],2))
+        if(flag==1):
             break
     open('LSB/output.txt','w').write(text)
 
+
 def LSB_RGB_encode():
-    img=cv2.imread('original.png')
+    img=cv2.imread('pic/original.png')
     text_binary=""
     text_binary_ptr=0
     for i in text:
@@ -76,22 +83,27 @@ def LSB_RGB_decode():
     img=cv2.imread('LSB/LSB_encode_RGB.png')
     text_binary=""
     text=""
+    flag=0
     for i in range(len(img)):
         for j in range(len(img[0])):
             for k in range(3):
                 text_binary+=f'{img[i][j][k]:08b}'[1:][-1]
-
-    for i in range(0,len(text_binary),8):
-        if((int(text_binary[i:i+8],2)!=0)):
-            text+=chr(int(text_binary[i:i+8],2))
-        else:
+                if(len(text_binary)%8==0):
+                    if(int(int(text_binary[-8:],2)==0)):
+                        flag=1
+                        break
+                    else:
+                        text+=chr(int(text_binary[-8:],2))
+            if(flag==1):
+                break
+        if(flag==1):
             break
-
+                
     open('LSB/output_RGB.txt','w').write(text)
 
 
 def MSB_encode():
-    img=cv2.imread('original.png')
+    img=cv2.imread('pic/original.png')
     text_binary=""
     text_binary_ptr=0
     for i in text:
@@ -117,20 +129,24 @@ def MSB_decode():
     img=cv2.imread('MSB/MSB_encode.png')
     text_binary=""
     text=""
+    flag=0
     for i in range(len(img)):
         for j in range(len(img[0])):
             text_binary+=f'{img[i][j][0]:08b}'[0]
-
-    for i in range(0,len(text_binary),8):
-        if(int(text_binary[i:i+8],2)!=0):
-            text+=chr(int(text_binary[i:i+8],2))
-        else:
+            if(len(text_binary)%8==0):
+                if(int(int(text_binary[-8:],2)==0)):
+                    flag=1
+                    break
+                else:
+                    text+=chr(int(text_binary[-8:],2))
+        if(flag==1):
             break
 
     open('MSB/output.txt','w').write(text)
 
+
 def MSB_RGB_encode():
-    img=cv2.imread('original.png')
+    img=cv2.imread('pic/original.png')
     text_binary=""
     text_binary_ptr=0
     for i in text:
@@ -159,18 +175,25 @@ def MSB_RGB_decode():
     img=cv2.imread('MSB/MSB_RGB_encode.png')
     text_binary=""
     text=""
+    flag=0
     for i in range(len(img)):
         for j in range(len(img[0])):
             for k in range(3):
                 text_binary+=f'{img[i][j][k]:08b}'[0]
-
-    for i in range(0,len(text_binary),8):
-        if(int(text_binary[i:i+8],2)!=0):
-            text+=chr(int(text_binary[i:i+8],2))
-        else:
+                if(len(text_binary)%8==0):
+                    if(int(int(text_binary[-8:],2)==0)):
+                        flag=1
+                        break
+                    else:
+                        text+=chr(int(text_binary[-8:],2))
+            if(flag==1):
+                break
+        if(flag==1):
             break
 
     open('MSB/output_RGB.txt','w').write(text)
+
+
 
 def encode():
     LSB_encode()
@@ -194,6 +217,43 @@ def decode():
     print('MSB_RGB_decode Done')
 
 
+
+# For text
 text=open('secret.txt','r').read()
 encode()
 decode()
+
+
+def Hybrid_encode():
+    img=cv2.imread('pic/image1.jpg')
+    img2=cv2.imread('pic/image2.jpg')
+    img_final=img.copy()
+    height,width,channels=img2.shape
+    if img2.shape[0]>=img.shape[0] and img2.shape[1]>=img.shape[1]  :
+        print('::: Pic 2 should be smaller')
+    else:
+        for i in range(len(img)):
+            for j in range(0,len(img[0])-1):
+                for k in range(3):
+                    if(i<height and j<width):
+                        img_final[i][j][k]=int(f'{img[i][j][k]:08b}'[:4]+f'{img2[i][j][k]:08b}'[:4],2)
+                    else:
+                        img_final[i][j][k]=int(f'{img[i][j][k]:08b}'[:4]+'0000',2)
+        cv2.imwrite("Hybrid/Hybrid.png",img_final,params=None)
+
+def Hybrid_decode():
+    img=cv2.imread("Hybrid/Hybrid.png")
+    img_final=img.copy()
+    for i in range(len(img)):
+        for j in range(0,len(img[0])-1):
+            for k in range(3):
+                    img_final[i][j][k]=int(f'{img[i][j][k]:08b}'[4:]+'0000',2)
+    cv2.imwrite("Hybrid/Hybrid_output.png",img_final,params=None)
+
+
+# For Picture
+Hybrid_encode()
+print('Hybrid_encode Done')
+print('---------------------------')
+Hybrid_decode()
+print('Hybrid_encode Done')

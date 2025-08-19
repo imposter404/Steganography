@@ -18,84 +18,97 @@
 
 
 ---
+## What is Steganography ?
+Steganography is a practice in which a file, image, text or video is concealed within another file, image, text or video
+
+## Why to use Steganography over Cryptography
+the main advantage of Steganography over Cryptography alone is that the intednded secrect message does not attract attention to itself. Plainly visible encrypted message, no matter how unbreakable they are, arouse interest.
+
+---
 # Method
 ### LSB 
-Least Significant Bit
+**Least Significant Bit** : this method changes the Rightmost bit for the whole pixel, it will have less impact on the final value. If we change the Rightmost bit from `0` to `1` (`00011000` to `00011001`) it will change the decimal value  from `24` to `25`.
+
 - #### Righttmost bit
-
-    In this process we change the Rightmost bit for the whole pixel it will have less impact on the final value.If we change the Rightmost bit from `0` to `1` (`00011000` to `00011001`) it will change the decimal value  from `24` to `25`.
-
-
-    ***Before encoding*** <br>
-    pixel1=[ 01100100, 01111000, 1000110 `0`] #RGB(100,120,140)<br>
-    pixel2=[ 01100100, 01111000, 1000110 `0`] #RGB(100,120,140)<br>
-    pixel3=[ 01100100, 01111000, 1000110 `0`] #RGB(100,120,140)<br>
-
-    secret_char='A' #binary: 01000001
-
-    ***After encoding*** <br>
-    pixel1=[ 01100100, 01111000, 1000110 `0`] #RGB(100,120,140)<br>
-    pixel2=[ 01100100, 01111000, 1000110 `1`] #RGB(100,120,141)<br>
-    pixel3=[ 01100100, 01111000, 1000110 `0`] #RGB(100,120,140)<br>
+    #RGB(100,120,140)<br>
+    [ 01100100, 01111000, 1000110 `0`] 
 
 
 - #### RGB
+    #RGB(100,120,140)<br>
+    [ 0110010`0`, 0111100`0`, 1000110 `0`] 
 
-    Here we change the rightmost bit for RGB channel for each pixel
-    It works similer as before but here we can hide 3 bit data in each pixel
+    ---
+### MSB 
+**Most Significant Bit** :this method changes the Leftmost bit for the whole pixel it will have large impact on the final value. If we change the Rightmost bit from `0` to `1` (`00011000` to `10011000`) it will change the decimal value  from `24` to `152`.
 
-    ***Before encoding*** <br>
-    pixel1=[ 0110010`0`, 0111100`0`, 1000110 `0`] #RGB(100,120,140)<br>
-    pixel2=[ 0110010`0`, 0111100`0`, 1000110 `0`] #RGB(100,120,140)<br>
-    pixel3=[ 0110010`0`, 0111100`0`, 1000110 `0`] #RGB(100,120,140)<br>
-    pixel3=[ 0110010`0`, 0111100`0`, 1000110 `0`] #RGB(100,120,140)<br>
+- #### Leftmost bit
+    #RGB(100,120,140)<br>
+    [ `0`1100100, 01111000, 10001100 ] 
 
-    secret_char='A' #binary: 01000001
+- #### RGB
+    #RGB(100,120,140)<br>
+    [ `0`1100100, `0`1111000, `1`0001100] 
+    
+    ---
 
-    ***After encoding*** <br>
-    pixel1=[ 0110010`0`, 0111100`1`, 1000110 `0`] #RGB(100,121,140)<br>
-    pixel2=[ 0110010`0`, 0111100`0`, 1000110 `0`] #RGB(100,120,140)<br>
-    pixel3=[ 0110010`0`, 0111100`0`, 1000110 `0`] #RGB(100,120,140)<br>
-    pixel3=[ 0110010`0`, 0111100`1`, 1000110 `0`] #RGB(100,121,140)<br>
+
+### Hybrid
+this method is used for pictures. Most significat bit is taken from both picture to make a new RGB pixel
+    
+[ **1100**1010, **0010**0110, **1110**1110] <br>
+[ **0000**1010, **1100**0001, **1111**1110] <br>
+<br>
+[ **1100** **0000** , **0010** **1100** , **1110** **1111**]
+
 
 
 ---
-### MSB 
-Most Significant Bit
-- #### Leftmost bit
+# Code
 
-    In this process we change the Leftmost bit for the whole pixel it will have large impact on the final value. If we change the Rightmost bit from `0` to `1` (`00011000` to `10011000`) it will change the decimal value  from `24` to `152`.
+- ### Text
 
-    ***Before encoding*** <br>
-    pixel1=[ `0`1100100, 01111000, 10001100 ] #RGB(100,120,140)<br>
-    pixel2=[ `0`1100100, 01111000, 10001100 ] #RGB(100,120,140)<br>
-    pixel3=[ `0`1100100, 01111000, 10001100 ] #RGB(100,120,140)<br>
+    `encode()` function run all the encoding method in selected image
 
-    secret_char='A' #binary: 01000001
+    > ```python
+    > def encode():
+    >     LSB_encode()
+    >     LSB_RGB_encode()
+    >     MSB_encode()
+    >     MSB_RGB_encode()
+    > ```
 
-    ***After encoding*** <br>
-    pixel1=[ `0`1100100, 01111000, 10001100 ] #RGB(100,120,140)<br>
-    pixel2=[ `1`1100100, 01111000, 10001100 ] #RGB(228,120,141)<br>
-    pixel3=[ `0`1100100, 01111000, 10001100 ] #RGB(100,120,140)<br>
+    > ```python
+    > encode()
+    > ```
 
-- #### RGB
+    `decode()` function run all the encoding method in selected image
 
-    Here we change the Leftmost bit for RGB channel for each pixel
-    It works similer as before but here we can hide 3 bit data in each pixel
+    > ```python
+    > def decode():
+    >     LSB_decode()
+    >     LSB_RGB_decode()
+    >     MSB_decode()
+    >     MSB_RGB_decode()
+    > ```
 
-    ***Before encoding*** <br>
-    pixel1=[ `0`1100100, `0`1111000, `1`0001100] #RGB(100,120,140)<br>
-    pixel2=[ `0`1100100, `0`1111000, `1`0001100] #RGB(100,120,140)<br>
-    pixel3=[ `0`1100100, `0`1111000, `1`0001100] #RGB(100,120,140)<br>
-    pixel3=[ `0`1100100, `0`1111000, `1`0001100] #RGB(100,120,140)<br>
+    > ```python
+    > decode()
+    > ```
+    ---
 
-    secret_char='A' #binary: 01000001
+- ### Picture
 
-    ***After encoding*** <br>
-    pixel1=[ `0`1100100, `1`1111000, `1`0001100] #RGB(100,248,140)<br>
-    pixel2=[ `0`1100100, `0`1111000, `1`0001100] #RGB(100,120,140)<br>
-    pixel3=[ `0`1100100, `0`1111000, `1`0001100] #RGB(100,120,140)<br>
-    pixel3=[ `0`1100100, `1`1111000, `1`0001100] #RGB(100,248,140)<br>
+    `image1.jpg` & `image2.jpg` is used here to encode
+
+    > ```python
+    > Hybrid_encode()
+    > Hybrid_decode()
+    > ```
+
+    >[!IMPORTANT]
+    > shape of `image2.jpg` < `image1.jpg`
+
 
 
 ---
@@ -106,8 +119,14 @@ depend on, and they will be installed using:
 ```
 pip install -r requirements.txt
 ```
+
 ---
 ## Run
+Pythin
+```pyhton
+Main.py
+```
+
 Jupyter Notebook
 ``` python 
 Main.ipynb
